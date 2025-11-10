@@ -20,6 +20,9 @@ src/main/resources/*.p12
 src/main/resources/application-*.properties
 src/main/resources/application-*.yml
 
+# ✅ Explicitly include safe template config
+!src/main/resources/application-template.yml
+
 ### STS ###
 .apt_generated
 .classpath
