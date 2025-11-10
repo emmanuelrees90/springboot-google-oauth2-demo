@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>OAuth Login Demo</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width">
+<base href="/">
+
+<link rel="stylesheet" type="text/css"
+	href="/webjars/bootstrap/css/bootstrap.min.css">
+<style>
+body {
+	background-color: #f9f9f9;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	padding: 40px;
+}
+
+.container-centered {
+	max-width: 400px;
+	margin: 80px auto;
+	background: white;
+	border-radius: 6px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	padding: 40px;
+}
+
+.brand-header {
+	text-align: center;
+	margin-bottom: 30px;
+}
+
+.brand-header h2 {
+	font-weight: bold;
+	color: #000;
+}
+
+.greeting {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.btn-black {
+	background-color: #000;
+	color: #fff;
+	width: 100%;
+	margin-top: 10px;
+}
+
+.btn-black:hover {
+	background-color: #333;
+	color: #fff;
+}
+
+.logout-section {
+	text-align: center;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript"
+	src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body ng-app="app" ng-controller="home as home">
+
+	<div ng-show="!home.authenticated" id="loginContainer"
+		class="container-centered">
+		<div class="brand-header">
+			<h2>Demo OAuth Login</h2>
+			<a href="/oauth2/authorization/google"
+				class="btn btn-danger btn-block"> <i
+				class="glyphicon glyphicon-log-in"></i> Sign in with Google
+			</a>
+		</div>
+
+	</div>
+
+	<div ng-show="home.authenticated" id="welcomeContainer"
+		class="container-centered">
+		<div class="greeting">
+			<h3>
+				Hello, <span ng-bind="home.user"></span>👋
+			</h3>
+			<p>Welcome back! Let's get you moving.</p>
+		</div>
+		<div class="logout-section">
+			<button id="logoutBtn" ng-click="home.logout()" class="btn btn-black">Logout</button>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
+	<script type="text/javascript">
+		angular.module("app", []).controller("home",
+				function($http, $location) {
+					var self = this;
+					$http.defaults.withCredentials = true;
+					$http.get("/user").success(function(data) {
+						if (data.name) {
+							self.user = data.name;
+							self.authenticated = true;
+						} else {
+							self.authenticated = false;
+						}
+
+					}).error(function() {
+						self.user = "N/A";
+						self.authenticated = false;
+					});
+
+					self.logout = function() {
+						$http.post('/logout', {}).success(function() {
+							self.authenticated = false;
+							$location.path("/");
+						}).error(function(data) {
+							console.log("Logout failed");
+							self.authenticated = false;
+						});
+					};
+				});
+	</script>
+
+</body>
+</html>
